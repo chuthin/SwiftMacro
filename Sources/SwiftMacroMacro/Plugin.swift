@@ -14,6 +14,7 @@ struct iBankMacroPlugin: CompilerPlugin {
     InjectionHotReload.self,
     IsCaseVariable.self,
     CloneMacro.self,
-    CloneIgnoreMacro.self
+    CloneIgnoreMacro.self,
+    EnumPrismMacro.self
   ]
 }

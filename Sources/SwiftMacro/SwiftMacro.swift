@@ -37,3 +37,7 @@ public macro Clone() = #externalMacro(module: "SwiftMacroMacro", type: "CloneMac
 
 @attached(peer)
 public macro CloneIgnore() = #externalMacro(module: "SwiftMacroMacro", type: "CloneIgnoreMacro")
+
+
+@attached(member, names: arbitrary)
+public macro EnumPrism() = #externalMacro(module: "SwiftMacroMacro", type: "EnumPrismMacro")
