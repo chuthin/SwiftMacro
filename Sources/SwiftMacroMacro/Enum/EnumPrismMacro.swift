@@ -22,25 +22,52 @@ public struct EnumPrismMacro: MemberMacro {
             .memberBlock.members.compactMap({ $0.decl.as(EnumCaseDeclSyntax.self)?.elements }) else {
             throw MacroDiagnostics.errorMacroUsage(message: "Can only be applied to an Enum type")
         }
+
+
         let enumName = enumDecl.name.trimmed
-
-
-
-
         return try members.flatMap { list-> [DeclSyntax] in
             try list.compactMap { element -> DeclSyntax? in
-                /*let varSyntax = try VariableDeclSyntax("\(declaration.modifiers ) func \(raw: element.name.description.capitalizingFirstLetter())Prim()") {
-                    try IfExprSyntax(
-                        "if case .\(element.name) = self",
-                        bodyBuilder: {
-                            StmtSyntax("return true")
-                        })
-                    StmtSyntax(#"return false"#)
-                }*/
                 return """
-                        \(declaration.modifiers ) static func \(raw: element.name.description)Prim() -> Prism<\(enumName),\(raw: element.trimmedTypeDescription)>{
+                        \(declaration.modifiers)static var \(raw: element.name.description)Prism: Prism<\(enumName),\(raw: element.trimmedTypeDescription)>{
                         return Prism<\(enumName),\(raw: element.trimmedTypeDescription)>(
                          embed: {\(enumName).\(raw: element.name.description)($0)},
+                         extract: { if case let .\(raw: element.name.description)(command) = $0 { return command } else { return nil } }
+                    )
+                }
+                """
+            }
+        }
+    }
+}
+
+public struct EnumPrismWithMacro: MemberMacro {
+    public static func expansion<Declaration: DeclGroupSyntax,
+                                 Context: MacroExpansionContext>(of node: AttributeSyntax,
+                                                                 providingMembersOf declaration: Declaration,
+                                                                 in context: Context) throws -> [DeclSyntax] {
+        guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
+                    throw MacroDiagnostics.errorMacroUsage(message: "Can only be applied to an Enum type")
+                }
+
+        guard let members = declaration.as(EnumDeclSyntax.self)?
+            .memberBlock.members.compactMap({ $0.decl.as(EnumCaseDeclSyntax.self)?.elements }) else {
+            throw MacroDiagnostics.errorMacroUsage(message: "Can only be applied to an Enum type")
+        }
+
+
+        guard let arguments = node.arguments?.as(LabeledExprListSyntax.self), let param = arguments.first?.expression.as(StringLiteralExprSyntax.self)?.trimmed
+        else {
+            throw MacroDiagnostics.errorMacroUsage(message: "Can only be applied to an Enum type")
+        }
+        let paramValue: String = param.description.replacingOccurrences(of: "\"", with: "")
+
+        let enumName = enumDecl.name.trimmed
+        return try members.flatMap { list-> [DeclSyntax] in
+            try list.compactMap { element -> DeclSyntax? in
+                return """
+                        \(declaration.modifiers)static var \(raw: element.name.description)Prism: Prism<\(enumName),\(raw: element.trimmedTypeDescription)>{
+                        return Prism<\(enumName),\(raw: element.trimmedTypeDescription)>(
+                         embed: {\(enumName).\(raw: element.name.description)(\(raw: paramValue.isEmpty ? "" : "\(paramValue): ")$0)},
                          extract: { if case let .\(raw: element.name.description)(command) = $0 { return command } else { return nil } }
                     )
                 }

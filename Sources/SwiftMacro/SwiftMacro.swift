@@ -41,3 +41,6 @@ public macro CloneIgnore() = #externalMacro(module: "SwiftMacroMacro", type: "Cl
 
 @attached(member, names: arbitrary)
 public macro EnumPrism() = #externalMacro(module: "SwiftMacroMacro", type: "EnumPrismMacro")
+
+@attached(member, names: arbitrary)
+public macro EnumPrismWith(_ param: String) = #externalMacro(module: "SwiftMacroMacro", type: "EnumPrismWithMacro")

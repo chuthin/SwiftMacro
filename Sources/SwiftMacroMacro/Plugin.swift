@@ -15,6 +15,7 @@ struct iBankMacroPlugin: CompilerPlugin {
     IsCaseVariable.self,
     CloneMacro.self,
     CloneIgnoreMacro.self,
-    EnumPrismMacro.self
+    EnumPrismMacro.self,
+    EnumPrismWithMacro.self
   ]
 }
