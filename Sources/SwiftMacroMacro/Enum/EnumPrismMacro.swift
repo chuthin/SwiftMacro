@@ -38,7 +38,7 @@ public struct EnumPrismMacro: MemberMacro {
                     StmtSyntax(#"return false"#)
                 }*/
                 return """
-                        \(declaration.modifiers ) func \(raw: element.name.description)Prim() -> Prism<\(enumName),\(raw: element.trimmedTypeDescription)>{
+                        \(declaration.modifiers ) static func \(raw: element.name.description)Prim() -> Prism<\(enumName),\(raw: element.trimmedTypeDescription)>{
                         return Prism<\(enumName),\(raw: element.trimmedTypeDescription)>(
                          embed: {\(enumName).\(raw: element.name.description)($0)},
                          extract: { if case let .\(raw: element.name.description)(command) = $0 { return command } else { return nil } }
